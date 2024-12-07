@@ -62,7 +62,7 @@ fn is_safe(line: &str) -> bool {
     true
 }
 mod tests {
-    use crate::{find_no_safe_reports, is_safe};
+    use super::*;
 
     const test_input: &str = "7 6 4 2 1
 1 2 7 8 9
