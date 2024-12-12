@@ -11,13 +11,11 @@ fn main() {
 
 fn add_up_middle_pages(input: &str) -> u32 {
     let (page_ordering_rules, pages_list) = parse_input(input);
-    let mut total: u32 = 0;
-    for pages in pages_list {
-        if are_pages_in_correct_order(&pages, &page_ordering_rules) {
-            total += find_middle_page_no(&pages);
-        }
-    }
-    total
+    pages_list
+        .iter()
+        .filter(|pages| are_pages_in_correct_order(&pages, &page_ordering_rules))
+        .map(|pages| find_middle_page_no(&pages))
+        .sum()
 }
 fn parse_input(input: &str) -> (Vec<PageOrderingRules>, Vec<Vec<u32>>) {
     let mut page_ordering_rules: Vec<PageOrderingRules> = vec![];
@@ -66,14 +64,11 @@ fn are_pages_in_correct_order(pages: &[u32], page_ordering_rules: &[PageOrdering
 }
 
 fn filter_page_rules(page_no: u32, page_ordering_rules: &[PageOrderingRules]) -> Vec<u32> {
-    let mut temp: Vec<u32> = vec![];
-    let temp_page_order_rules = page_ordering_rules.clone();
-    for page_order_rule in temp_page_order_rules.iter() {
-        if page_order_rule.page_number_before == page_no {
-            temp.push(page_order_rule.page_number);
-        }
-    }
-    temp
+    page_ordering_rules
+        .iter()
+        .filter(|page_ordering_rule| page_ordering_rule.page_number_before == page_no)
+        .map(|page_ordering_rule: &PageOrderingRules| page_ordering_rule.page_number)
+        .collect()
 }
 mod tests {
     use super::*;
