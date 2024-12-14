@@ -15,12 +15,13 @@ fn add_result_of_instruction_process(input: &str) -> u32 {
         .collect();
     for instruction in instructions {
         let parsed_instruction = instruction.trim_start_matches("mul(");
-        let parsed_instruction = parsed_instruction.trim_end_matches(")");
+        let parsed_instruction = parsed_instruction.trim_end_matches(')');
         let numbers = parsed_instruction.split(',').collect::<Vec<&str>>();
-        total += (numbers[0].parse::<u32>().unwrap() * numbers[1].parse::<u32>().unwrap());
+        total += numbers[0].parse::<u32>().unwrap() * numbers[1].parse::<u32>().unwrap();
     }
     total
 }
+#[cfg(test)]
 mod tests {
     use crate::add_result_of_instruction_process;
 
