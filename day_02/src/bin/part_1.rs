@@ -5,9 +5,8 @@ fn main() {
 }
 fn find_no_safe_reports(inputs: &str) -> u32 {
     let mut total: u32 = 0;
-    for (count, line) in inputs.lines().enumerate() {
+    for line in inputs.lines() {
         let result = is_safe(line);
-        println!("line{:?} is {:?}", count + 1, result);
         if result {
             total += 1;
         }
@@ -28,11 +27,7 @@ fn is_safe(line: &str) -> bool {
             continue;
         }
         if count == 1 {
-            if number.parse::<u32>().unwrap() as u32 > first_no {
-                is_ascending = true;
-            } else {
-                is_ascending = false;
-            }
+            is_ascending = number.parse::<u32>().unwrap() > first_no;
             if previous_no.abs_diff(number.parse::<u32>().unwrap()) > 3 {
                 return false;
             }
@@ -61,10 +56,11 @@ fn is_safe(line: &str) -> bool {
 
     true
 }
+#[cfg(test)]
 mod tests {
     use super::*;
 
-    const test_input: &str = "7 6 4 2 1
+    const TEST_INPUT: &str = "7 6 4 2 1
 1 2 7 8 9
 9 7 6 2 1
 1 3 2 4 5
@@ -73,25 +69,25 @@ mod tests {
 
     #[test]
     fn test_no_safe_reports() {
-        assert_eq!(2, find_no_safe_reports(&test_input));
+        assert_eq!(2, find_no_safe_reports(TEST_INPUT));
     }
     #[test]
     fn test_is_safe() {
         let input: &str = "7 6 4 2 1";
-        assert_eq!(true, is_safe(input));
+        assert!(is_safe(input));
         let input: &str = "1 2 7 8 9";
-        assert_eq!(false, is_safe(input));
+        assert!(!is_safe(input));
         let input: &str = "9 7 6 2 1";
-        assert_eq!(false, is_safe(input));
+        assert!(!is_safe(input));
         let input: &str = "1 3 2 4 5";
-        assert_eq!(false, is_safe(input));
+        assert!(!is_safe(input));
         let input: &str = "8 6 4 4 1";
-        assert_eq!(false, is_safe(input));
+        assert!(!is_safe(input));
         let input: &str = "1 3 6 7 9";
-        assert_eq!(true, is_safe(input));
+        assert!(is_safe(input));
         let input: &str = "1 5 6 7 9";
-        assert_eq!(false, is_safe(input));
+        assert!(!is_safe(input));
         let input: &str = "1 1 3 6 7 9";
-        assert_eq!(false, is_safe(input));
+        assert!(!is_safe(input));
     }
 }
