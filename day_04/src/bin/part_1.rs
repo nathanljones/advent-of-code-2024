@@ -34,22 +34,22 @@ fn how_many_times_to_appear(input: &str) -> u32 {
     let search_grid = convert_to_grid(input);
     let chars_to_find: Vec<char> = vec!['M', 'A', 'S'];
     let directions = build_directions();
-    let mut search_chars_count: u32 = 0;
+    let mut search_chars_count: u32;
     let mut first_pos: UVec2 = UVec2::new(0, 0);
     let mut new_pos: IVec2 = IVec2::new(0, 0);
     let mut total: u32 = 0;
 
-    for line in search_grid.iter() {
+    for line in &search_grid {
         for char in line {
             if *char != 'X' {
                 first_pos.x += 1;
                 continue;
             }
-            for direction in directions.iter() {
+            for direction in &directions {
                 new_pos.x = first_pos.x as i32;
                 new_pos.y = first_pos.y as i32;
                 search_chars_count = 0;
-                for search_char in chars_to_find.iter() {
+                for search_char in &chars_to_find {
                     new_pos.x += direction.offset().x;
                     new_pos.y += direction.offset().y;
 
@@ -98,6 +98,7 @@ fn build_directions() -> Vec<Direction> {
         Direction::LeftDown,
     ]
 }
+#[cfg(test)]
 mod tests {
     use crate::how_many_times_to_appear;
 

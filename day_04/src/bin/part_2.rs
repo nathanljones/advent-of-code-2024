@@ -24,15 +24,12 @@ impl Direction {
 
 fn how_many_times_to_appear(input: &str) -> u32 {
     let search_grid = convert_to_grid(input);
-    let chars_to_find: Vec<char> = vec!['A', 'S'];
-    let directions = build_directions();
-    let mut search_chars_count: u32 = 0;
     let mut first_pos: UVec2 = UVec2::new(0, 0);
     let mut new_pos: IVec2 = IVec2::new(0, 0);
     let mut total: u32 = 0;
-    let mut char_to_search_for = 'X';
+    let mut char_to_search_for: char;
 
-    for line in search_grid.iter() {
+    for line in &search_grid {
         for char in line {
             if *char != 'A' {
                 first_pos.x += 1;
@@ -150,18 +147,9 @@ fn is_new_pos_out_of_bounds(position: IVec2, upper_bound_x: i32, upper_bound_y: 
 fn convert_to_grid(input: &str) -> Vec<Vec<char>> {
     input.lines().map(|line| line.chars().collect()).collect()
 }
-
-fn build_directions() -> Vec<Direction> {
-    vec![
-        Direction::LeftUp,
-        Direction::RightUp,
-        Direction::RightDown,
-        Direction::LeftDown,
-    ]
-}
+#[cfg(test)]
 mod tests {
-    use crate::how_many_times_to_appear;
-
+    use super::*;
     const TEST_INPUT: &str = "MMMSXXMASM
 MSAMXMSMSA
 AMXSXMAAMM
