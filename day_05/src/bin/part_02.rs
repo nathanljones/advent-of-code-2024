@@ -6,16 +6,16 @@ struct PageOrderingRules {
 fn main() {
     let inputs = include_str!("input.txt");
     let total = add_up_middle_pages(inputs);
-    println!("{:?}", total);
+    println!("{total}");
 }
 
 fn add_up_middle_pages(input: &str) -> u32 {
     let (page_ordering_rules, pages_list) = parse_input(input);
     pages_list
         .iter()
-        .filter(|pages| are_pages_in_correct_order(&pages, &page_ordering_rules) == false)
+        .filter(|pages| !are_pages_in_correct_order(pages, &page_ordering_rules))
         .map(|pages| {
-            let sorted_pages = sort_paages_into_correct_order(&pages, &page_ordering_rules);
+            let sorted_pages = sort_pages_into_correct_order(pages, &page_ordering_rules);
             find_middle_page_no(&sorted_pages)
         })
         .sum()
@@ -25,8 +25,8 @@ fn parse_input(input: &str) -> (Vec<PageOrderingRules>, Vec<Vec<u32>>) {
     let mut pages: Vec<Vec<u32>> = vec![];
 
     for line in input.lines() {
-        if line.contains("|") {
-            let ordering_rule = line.split("|").collect::<Vec<&str>>();
+        if line.contains('|') {
+            let ordering_rule = line.split('|').collect::<Vec<&str>>();
             let mut page_order: PageOrderingRules = PageOrderingRules {
                 page_number_before: 0,
                 page_number: 0,
@@ -34,9 +34,9 @@ fn parse_input(input: &str) -> (Vec<PageOrderingRules>, Vec<Vec<u32>>) {
             page_order.page_number_before = ordering_rule[0].parse::<u32>().unwrap();
             page_order.page_number = ordering_rule[1].parse::<u32>().unwrap();
             page_ordering_rules.push(page_order);
-        } else if line.contains(",") {
+        } else if line.contains(',') {
             let page_nos: Vec<u32> = line
-                .split(",")
+                .split(',')
                 .map(|no| no.parse::<u32>().unwrap())
                 .collect();
             pages.push(page_nos);
@@ -48,13 +48,13 @@ fn parse_input(input: &str) -> (Vec<PageOrderingRules>, Vec<Vec<u32>>) {
     (page_ordering_rules, pages)
 }
 fn find_middle_page_no(pages: &[u32]) -> u32 {
-    let middle_page_no = (pages.len() / 2);
+    let middle_page_no = pages.len() / 2;
     pages[middle_page_no]
 }
 
 fn are_pages_in_correct_order(pages: &[u32], page_ordering_rules: &[PageOrderingRules]) -> bool {
     for (position, page) in pages.iter().enumerate() {
-        let page_order = filter_page_rules(*page, &page_ordering_rules);
+        let page_order = filter_page_rules(*page, page_ordering_rules);
         for pos in 0..position {
             let page_to_check = pages[pos];
             if page_order.contains(&page_to_check) {
@@ -65,7 +65,6 @@ fn are_pages_in_correct_order(pages: &[u32], page_ordering_rules: &[PageOrdering
 
     true
 }
-
 fn filter_page_rules(page_no: u32, page_ordering_rules: &[PageOrderingRules]) -> Vec<u32> {
     page_ordering_rules
         .iter()
@@ -74,17 +73,17 @@ fn filter_page_rules(page_no: u32, page_ordering_rules: &[PageOrderingRules]) ->
         .collect()
 }
 
-fn sort_paages_into_correct_order(
+fn sort_pages_into_correct_order(
     pages: &[u32],
     page_ordering_rules: &[PageOrderingRules],
 ) -> Vec<u32> {
     let mut sorted_pages: Vec<u32> = pages.into();
 
-    for (page_no, page) in pages.iter().enumerate() {
+    for page in pages {
         let filtered_pages = filter_page_rules(*page, page_ordering_rules);
         let (smallest_page_index, found) =
             find_smallest_index_for_page(&sorted_pages, &filtered_pages);
-        if found == false {
+        if !found {
             continue;
         };
         let page_to_move_index = sorted_pages
@@ -93,7 +92,7 @@ fn sort_paages_into_correct_order(
         match page_to_move_index {
             Some(page_to_move) => {
                 if page_to_move as u32 > smallest_page_index {
-                    sorted_pages.remove(page_to_move as usize);
+                    sorted_pages.remove(page_to_move);
                     sorted_pages.insert(smallest_page_index as usize, *page);
                 };
             }
@@ -125,6 +124,7 @@ fn find_smallest_index_for_page(pages: &[u32], filtered_pages: &[u32]) -> (u32, 
         (0, found)
     }
 }
+#[cfg(test)]
 mod tests {
     use super::*;
 
@@ -160,11 +160,11 @@ mod tests {
     fn test_parse_input() {
         let (page_ordering_rules, pages) = parse_input(TEST_INPUT);
         assert_eq!(21, page_ordering_rules.len());
-        assert_eq!(6, pages.len())
+        assert_eq!(6, pages.len());
     }
     #[test]
     fn test_middle_page_no() {
-        let (page_ordering_rules, pages) = parse_input(TEST_INPUT);
+        let (_page_ordering_rules, pages) = parse_input(TEST_INPUT);
         assert_eq!(61, find_middle_page_no(&pages[0]));
         assert_eq!(53, find_middle_page_no(&pages[1]));
         assert_eq!(29, find_middle_page_no(&pages[2]));
@@ -172,58 +172,40 @@ mod tests {
     #[test]
     fn test_ordering_of_pages() {
         let (page_ordering_rules, pages) = parse_input(TEST_INPUT);
-        assert_eq!(
-            true,
-            are_pages_in_correct_order(&pages[0], &page_ordering_rules)
-        );
-        assert_eq!(
-            true,
-            are_pages_in_correct_order(&pages[1], &page_ordering_rules)
-        );
-        assert_eq!(
-            true,
-            are_pages_in_correct_order(&pages[2], &page_ordering_rules)
-        );
-        assert_eq!(
-            false,
-            are_pages_in_correct_order(&pages[3], &page_ordering_rules)
-        );
-        assert_eq!(
-            false,
-            are_pages_in_correct_order(&pages[4], &page_ordering_rules)
-        );
-        assert_eq!(
-            are_pages_in_correct_order(&pages[5], &page_ordering_rules),
-            false
-        );
+        assert!(are_pages_in_correct_order(&pages[0], &page_ordering_rules));
+        assert!(are_pages_in_correct_order(&pages[1], &page_ordering_rules));
+        assert!(are_pages_in_correct_order(&pages[2], &page_ordering_rules));
+        assert!(!are_pages_in_correct_order(&pages[3], &page_ordering_rules));
+        assert!(!are_pages_in_correct_order(&pages[4], &page_ordering_rules));
+        assert!(!are_pages_in_correct_order(&pages[5], &page_ordering_rules),);
     }
     #[test]
     fn test_filter_page_rules() {
-        let (page_ordering_rules, pages) = parse_input(TEST_INPUT);
+        let (page_ordering_rules, _pages) = parse_input(TEST_INPUT);
         let filtered_pages = filter_page_rules(97, &page_ordering_rules);
         assert_eq!(filtered_pages.len(), 6);
-        assert_eq!(filtered_pages.contains(&13), true);
+        assert!(filtered_pages.contains(&13));
         let filtered_pages = filter_page_rules(97, &page_ordering_rules);
         assert_eq!(filtered_pages.len(), 6);
-        assert_eq!(filtered_pages.contains(&75), true);
+        assert!(filtered_pages.contains(&75));
     }
     #[test]
     fn test_sort_pages_into_order() {
         let (page_ordering_rules, pages) = parse_input(TEST_INPUT);
         let correct_pages: Vec<u32> = vec![97, 75, 47, 61, 53];
         assert_eq!(
-            sort_paages_into_correct_order(&pages[3], &page_ordering_rules,),
+            sort_pages_into_correct_order(&pages[3], &page_ordering_rules,),
             correct_pages
         );
         let correct_pages: Vec<u32> = vec![61, 29, 13];
         assert_eq!(
-            sort_paages_into_correct_order(&pages[4], &page_ordering_rules,),
+            sort_pages_into_correct_order(&pages[4], &page_ordering_rules,),
             correct_pages
         );
 
         let correct_pages: Vec<u32> = vec![97, 75, 47, 29, 13];
         assert_eq!(
-            sort_paages_into_correct_order(&pages[5], &page_ordering_rules,),
+            sort_pages_into_correct_order(&pages[5], &page_ordering_rules,),
             correct_pages
         );
     }
