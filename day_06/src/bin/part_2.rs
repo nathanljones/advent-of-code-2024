@@ -124,9 +124,15 @@ fn will_form_a_loop(map: &HashMap<UVec2, char>, grid_size: UVec2) -> bool {
         if will_hit_object(current_position, &current_direction, &map) {
             current_direction = current_direction.new_direction();
         }
+        if will_hit_object(current_position, &current_direction, &map) {
+            current_direction = current_direction.new_direction();
+        }
+        if will_hit_object(current_position, &current_direction, &map) {
+            current_direction = current_direction.new_direction();
+        }
         current_position = move_guard(current_position, &current_direction);
     }
-
+    //print!("{}", count);
     false
 }
 fn will_leave_grid(current_pos: UVec2, direction: &Direction, grid_size: UVec2) -> bool {
