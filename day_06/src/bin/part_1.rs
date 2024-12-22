@@ -46,8 +46,8 @@ fn count_distinct_positions(input: &str) -> u32 {
         }
         current_position = move_guard(current_position, &current_direction);
     }
-
-    map.iter().filter(|&(_, v)| *v == 'X').count() as u32 + 1
+    map.insert(current_position, 'X');
+    map.iter().filter(|&(_, v)| *v == 'X').count() as u32
 }
 fn will_leave_grid(current_pos: UVec2, direction: &Direction, grid_size: UVec2) -> bool {
     let mut result: bool = false;
@@ -134,7 +134,7 @@ mod tests {
     #[test]
     fn test_parse() {
         let grid = parse(TEST_INPUT);
-        assert_eq!(grid.get(&UVec2 { x: 4, y: 5 }), Some(&'#'));
+        assert_eq!(grid.get(&UVec2 { x: 9, y: 1 }), Some(&'#'));
     }
     #[test]
     fn test_current_position() {
