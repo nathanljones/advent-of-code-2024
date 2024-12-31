@@ -1,3 +1,4 @@
+use day_09::{calc_checksum, parse_input};
 fn main() {
     let inputs = include_str!("input.txt");
     let decompressed_blocks = parse_input(inputs);
@@ -7,12 +8,7 @@ fn main() {
 }
 
 fn move_blocks(blocks: &Vec<Option<u32>>) -> Vec<Option<u32>> {
-    let rev_blocks: Vec<u32> = blocks
-        .iter()
-        .rev()
-        .filter(|item| item.is_some())
-        .map(|item| item.unwrap())
-        .collect();
+    let rev_blocks: Vec<u32> = blocks.iter().rev().flatten().copied().collect();
 
     let mut file_size: Vec<(u32, u32)> = Vec::new();
     let mut file_name = rev_blocks[0];
@@ -51,43 +47,6 @@ fn move_blocks(blocks: &Vec<Option<u32>>) -> Vec<Option<u32>> {
         }
     }
     compacted_blocks
-}
-
-fn calc_checksum(blocks: &[Option<u32>]) -> u64 {
-    blocks
-        .iter()
-        .enumerate()
-        .map(|value| {
-            if value.1.is_some() {
-                value.0 as u64 * u64::from(value.1.unwrap())
-            } else {
-                0
-            }
-        })
-        .sum()
-}
-
-fn parse_input(input: &str) -> Vec<Option<u32>> {
-    let mut file_id: u32 = 0;
-    input
-        .chars()
-        .enumerate()
-        .flat_map(|(i, c)| {
-            let count: u32 = c.to_digit(10).unwrap();
-            let mut test_output: Vec<Option<u32>> = vec![];
-            for _x in 0..count {
-                if i % 2 != 0 && i > 0 {
-                    test_output.push(None);
-                } else {
-                    test_output.push(Some(file_id));
-                }
-            }
-            if i % 2 != 0 && i > 0 {
-                file_id += 1;
-            }
-            test_output.into_iter()
-        })
-        .collect::<Vec<Option<u32>>>()
 }
 
 mod tests {
