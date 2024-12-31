@@ -8,18 +8,15 @@ fn count_trailheads(map: &HashMap<UVec2, u32>) -> u32 {
         map.clone().into_iter().filter(|pos| pos.1 == 0).collect();
     let end_positions: Vec<(UVec2, u32)> =
         map.clone().into_iter().filter(|pos| pos.1 == 9).collect();
-    let mut ret: u32 = 0;
-    for start_pos in &start_positions {
-        ret += &end_positions.iter().fold(0, |acc, pos| {
+    start_positions.iter().fold(0, |acc, start_pos| {
+        acc + end_positions.iter().fold(0, |acc, pos| {
             acc + count_paths(
                 start_pos.0,
                 |&p| get_next_nodes(p, map).into_iter(),
                 |&p| p == pos.0,
             ) as u32
-        });
-    }
-
-    ret
+        })
+    })
 }
 
 fn get_next_nodes(point: UVec2, map: &HashMap<UVec2, u32>) -> Vec<UVec2> {

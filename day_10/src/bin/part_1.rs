@@ -9,14 +9,13 @@ struct Successor {
 }
 
 fn count_trailheads(map: &HashMap<UVec2, u32>) -> u32 {
-    let mut no_found: u32 = 0;
     let start_positions: Vec<(UVec2, u32)> =
         map.clone().into_iter().filter(|pos| pos.1 == 0).collect();
     let end_positions: Vec<(UVec2, u32)> =
         map.clone().into_iter().filter(|pos| pos.1 == 9).collect();
 
-    for start_pos in &start_positions {
-        no_found += end_positions.iter().fold(0, |acc, pos| {
+    start_positions.iter().fold(0, |acc, start_pos| {
+        acc + end_positions.iter().fold(0, |acc, pos| {
             let result = dijkstra(
                 &start_pos.0,
                 |p| {
@@ -33,9 +32,8 @@ fn count_trailheads(map: &HashMap<UVec2, u32>) -> u32 {
             } else {
                 acc
             }
-        });
-    }
-    no_found
+        })
+    })
 }
 
 fn get_next_nodes(point: UVec2, map: &HashMap<UVec2, u32>) -> Vec<Successor> {
