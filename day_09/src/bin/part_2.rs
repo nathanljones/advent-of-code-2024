@@ -14,7 +14,7 @@ fn move_blocks(blocks: &Vec<Option<u32>>) -> Vec<Option<u32>> {
     let mut file_name = rev_blocks[0];
     let mut count: u32 = 0;
     let mut pos = 0;
-    for file in rev_blocks.iter() {
+    for file in &rev_blocks {
         if file_name == *file {
             count += 1;
         } else {
