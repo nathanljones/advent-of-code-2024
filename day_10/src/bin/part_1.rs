@@ -1,77 +1,40 @@
-use glam::{IVec2, UVec2};
+use day_10::{parse, Direction};
+use glam::UVec2;
 use pathfinding::prelude::dijkstra;
 use std::collections::HashMap;
+
 struct Successor {
     pub pos: UVec2,
     pub cost: u32,
 }
-enum Direction {
-    Up,
-    Down,
-    Left,
-    Right,
-}
-impl Direction {
-    pub fn offset(&self) -> IVec2 {
-        match self {
-            Direction::Up => IVec2::new(0, -1),
-            Direction::Down => IVec2::new(0, 1),
-            Direction::Left => IVec2::new(-1, 0),
-            Direction::Right => IVec2::new(1, 0),
-        }
-    }
-}
-fn parse(input: &str) -> HashMap<UVec2, u32> {
-    let mut ret: HashMap<UVec2, u32> = HashMap::new();
-    for line in input.lines().enumerate() {
-        for char in line.1.chars().enumerate() {
-            if char.1.is_digit(10) {
-                ret.insert(
-                    UVec2::new(char.0.try_into().unwrap(), line.0.try_into().unwrap()),
-                    char.1.to_digit(10).unwrap(),
-                );
-            }
-        }
-    }
-
-    ret
-}
 
 fn count_trailheads(map: &HashMap<UVec2, u32>) -> u32 {
-    let temp = map.clone();
     let mut no_found: u32 = 0;
-    let start_positions: Vec<(UVec2, u32)> = temp
-        .into_iter()
-        .filter(|pos| pos.1 == 0)
-        .map(|pos| pos.clone())
-        .collect();
-    let temp1 = map.clone();
-    let end_positions: Vec<(UVec2, u32)> = temp1
-        .into_iter()
-        .filter(|pos| pos.1 == 9)
-        .map(|pos| pos.clone())
-        .collect();
+    let start_positions: Vec<(UVec2, u32)> =
+        map.clone().into_iter().filter(|pos| pos.1 == 0).collect();
+    let end_positions: Vec<(UVec2, u32)> =
+        map.clone().into_iter().filter(|pos| pos.1 == 9).collect();
 
     for start_pos in &start_positions {
-        for end_pos in &end_positions {
-            let start = start_pos.0;
-            let goal = end_pos.0;
+        no_found += end_positions.iter().fold(0, |acc, pos| {
             let result = dijkstra(
-                &start,
+                &start_pos.0,
                 |p| {
                     get_next_nodes(*p, map)
                         .iter()
                         .map(|s| (s.pos, s.cost))
                         .collect::<Vec<_>>()
                 },
-                |p| *p == goal,
+                |p| *p == pos.0,
             );
-            if result.is_some() {
-                no_found += 1;
-            }
-        }
-    }
 
+            if result.is_some() {
+                acc + 1
+            } else {
+                acc
+            }
+        });
+    }
     no_found
 }
 
@@ -85,9 +48,6 @@ fn get_next_nodes(point: UVec2, map: &HashMap<UVec2, u32>) -> Vec<Successor> {
     let mut ret: Vec<Successor> = Vec::new();
     for direction in &directions {
         let new_point = point.as_ivec2() + direction.offset();
-        if new_point.x < 0 || new_point.y < 0 {
-            continue;
-        }
         if !map.contains_key(&new_point.as_uvec2()) {
             continue;
         }
@@ -141,9 +101,9 @@ mod tests {
 10456732";
     #[test]
     fn test_trailhead_count() {
-        assert_eq!(count_trailheads(&parse(&EXAMPLE_ONE)), 2);
-        assert_eq!(count_trailheads(&parse(&EXAMPLE_TWO)), 4);
-        assert_eq!(count_trailheads(&parse(&EXAMPLE_THREE)), 3);
-        assert_eq!(count_trailheads(&parse(&EXAMPLE_FOUR)), 36);
+        assert_eq!(count_trailheads(&parse(EXAMPLE_ONE)), 2);
+        assert_eq!(count_trailheads(&parse(EXAMPLE_TWO)), 4);
+        assert_eq!(count_trailheads(&parse(EXAMPLE_THREE)), 3);
+        assert_eq!(count_trailheads(&parse(EXAMPLE_FOUR)), 36);
     }
 }
