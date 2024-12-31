@@ -8,21 +8,24 @@ fn main() {
 }
 
 fn move_blocks(blocks: &Vec<Option<u32>>) -> Vec<Option<u32>> {
-    let rev_blocks: Vec<u32> = blocks.iter().rev().flatten().copied().collect();
+    let rev_blocks: Vec<u32> = blocks.iter().flatten().copied().collect();
 
-    let mut file_size: Vec<(u32, u32)> = Vec::new();
+    let mut file_size: Vec<(u32, u32, u32)> = Vec::new();
     let mut file_name = rev_blocks[0];
     let mut count: u32 = 0;
-    for file in rev_blocks {
-        if file_name == file {
+    let mut pos = 0;
+    for file in rev_blocks.iter() {
+        if file_name == *file {
             count += 1;
         } else {
-            file_size.push((file_name, count));
+            file_size.push((file_name, count, pos as u32));
             count = 1;
-            file_name = file;
+            file_name = *file;
+            pos = blocks.iter().position(|item| *item == Some(*file)).unwrap();
         }
     }
-    file_size.push((file_name, count));
+    file_size.push((file_name, count, pos as u32));
+    let file_size: Vec<(u32, u32, u32)> = file_size.iter().rev().copied().collect();
 
     let mut compacted_blocks = blocks.clone();
     for file in file_size {
@@ -30,10 +33,7 @@ fn move_blocks(blocks: &Vec<Option<u32>>) -> Vec<Option<u32>> {
             .windows(file.1 as usize)
             .position(|item| item == vec![None; file.1 as usize])
         {
-            let orig_file_start = blocks
-                .iter()
-                .position(|item| *item == Some(file.0))
-                .unwrap();
+            let orig_file_start = file.2 as usize;
             if start_index < orig_file_start {
                 for pos in 0..file.1 {
                     compacted_blocks[start_index + pos as usize] = Some(file.0);
