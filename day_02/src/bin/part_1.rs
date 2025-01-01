@@ -4,14 +4,9 @@ fn main() {
     println!("{:?}", total);
 }
 fn find_no_safe_reports(inputs: &str) -> u32 {
-    let mut total: u32 = 0;
-    for line in inputs.lines() {
-        let result = is_safe(line);
-        if result {
-            total += 1;
-        }
-    }
-    total
+    inputs
+        .lines()
+        .fold(0, |acc, line| if is_safe(line) { acc + 1 } else { acc })
 }
 
 fn is_safe(line: &str) -> bool {
