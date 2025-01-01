@@ -43,7 +43,6 @@ fn get_next_nodes(point: UVec2, map: &HashMap<UVec2, u32>) -> Vec<Successor> {
         Direction::Left,
         Direction::Right,
     ];
-    //let mut ret: Vec<Successor> = Vec::new();
     directions
         .iter()
         .flat_map(|direction| {
