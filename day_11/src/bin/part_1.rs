@@ -12,7 +12,7 @@ fn count_stones(input: &str, no_times: u32) -> u64 {
         new_list_of_stones.clear();
         for (stone_no, stone_count) in &list_of_stones {
             let new_stone_combo = convert_stone(stone_no);
-            for (stone_value, count) in new_stone_combo.iter() {
+            for (stone_value, count) in &new_stone_combo {
                 if new_list_of_stones.contains_key(stone_value) {
                     let val = new_list_of_stones.get_mut(stone_value).unwrap();
                     *val += count * stone_count;
@@ -21,7 +21,7 @@ fn count_stones(input: &str, no_times: u32) -> u64 {
                 }
             }
         }
-        list_of_stones = new_list_of_stones.clone();
+        list_of_stones.clone_from(&new_list_of_stones);
     }
 
     list_of_stones.into_values().sum()
