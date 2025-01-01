@@ -43,23 +43,25 @@ fn get_next_nodes(point: UVec2, map: &HashMap<UVec2, u32>) -> Vec<Successor> {
         Direction::Left,
         Direction::Right,
     ];
-    let mut ret: Vec<Successor> = Vec::new();
-    for direction in &directions {
-        let new_point = point.as_ivec2() + direction.offset();
-        if !map.contains_key(&new_point.as_uvec2()) {
-            continue;
-        }
-        let new_height = *map.get(&new_point.as_uvec2()).unwrap();
-        let old_height = *map.get(&point).unwrap();
-        if new_height == old_height + 1 {
-            ret.push(Successor {
-                pos: new_point.as_uvec2(),
-                cost: 1,
-            });
-        }
-    }
-
-    ret
+    //let mut ret: Vec<Successor> = Vec::new();
+    directions
+        .iter()
+        .flat_map(|direction| {
+            let new_point = point.as_ivec2() + direction.offset();
+            let mut ret: Vec<Successor> = Vec::new();
+            if map.contains_key(&new_point.as_uvec2()) {
+                let new_height = *map.get(&new_point.as_uvec2()).unwrap();
+                let old_height = *map.get(&point).unwrap();
+                if new_height == old_height + 1 {
+                    ret.push(Successor {
+                        pos: new_point.as_uvec2(),
+                        cost: 1,
+                    });
+                }
+            }
+            ret.into_iter()
+        })
+        .collect()
 }
 fn main() {
     let inputs = include_str!("input.txt");

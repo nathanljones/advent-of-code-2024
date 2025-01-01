@@ -26,23 +26,24 @@ fn get_next_nodes(point: UVec2, map: &HashMap<UVec2, u32>) -> Vec<UVec2> {
         Direction::Left,
         Direction::Right,
     ];
-    let mut ret: Vec<UVec2> = Vec::new();
-    for direction in &directions {
-        let new_point = point.as_ivec2() + direction.offset();
-        if !map.contains_key(&new_point.as_uvec2()) {
-            continue;
-        }
-        let new_height = *map.get(&new_point.as_uvec2()).unwrap();
-        let old_height = *map.get(&point).unwrap();
-        if old_height == 9 {
-            continue;
-        }
-        if new_height == old_height + 1 {
-            ret.push(new_point.as_uvec2());
-        }
-    }
 
-    ret
+    directions
+        .iter()
+        .flat_map(|direction| {
+            let mut ret: Vec<UVec2> = Vec::new();
+            let new_point = point.as_ivec2() + direction.offset();
+            if map.contains_key(&new_point.as_uvec2()) {
+                let new_height = *map.get(&new_point.as_uvec2()).unwrap();
+                let old_height = *map.get(&point).unwrap();
+                if old_height < 9 {
+                    if new_height == old_height + 1 {
+                        ret.push(new_point.as_uvec2());
+                    }
+                }
+            }
+            ret.into_iter()
+        })
+        .collect()
 }
 fn main() {
     let inputs = include_str!("input.txt");
