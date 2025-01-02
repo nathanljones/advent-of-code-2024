@@ -3,7 +3,7 @@ use std::collections::HashMap;
 fn main() {
     let inputs = include_str!("input.txt");
     let total = count_stones(inputs, 75);
-    println!("{:?}", total);
+    println!("{total}");
 }
 fn count_stones(input: &str, no_times: u32) -> u64 {
     let mut list_of_stones = parse_input(input);
@@ -34,11 +34,11 @@ fn convert_stone(stone: &str) -> HashMap<String, u64> {
         let (first_stone, second_stone) = stone.split_at(stone.len() / 2);
         let first_stone_no = first_stone.parse::<u32>().unwrap();
         let second_stone_no = second_stone.parse::<u32>().unwrap();
-        if first_stone_no != second_stone_no {
+        if first_stone_no == second_stone_no {
+            result.insert(first_stone_no.to_string(), 2);
+        } else {
             result.insert(first_stone_no.to_string(), 1);
             result.insert(second_stone_no.to_string(), 1);
-        } else {
-            result.insert(first_stone_no.to_string(), 2);
         }
     } else {
         let mut stone_no: u64 = stone.parse::<u64>().unwrap();
