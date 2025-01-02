@@ -3,34 +3,42 @@ use regex::Regex;
 fn main() {
     let inputs = include_str!("input.txt");
     let total = add_result_of_instruction_process(inputs);
-    println!("{:?}", total);
+    println!("{total}");
 }
 
 fn add_result_of_instruction_process(input: &str) -> u32 {
     let re_instruction = Regex::new(r"mul\((\d{1,3}),(\d{1,3})\)|do\(\)|don't\(\)").unwrap();
-    let mut total: u32 = 0;
     let mut enabled: bool = true;
 
     let instructions: Vec<&str> = re_instruction
         .find_iter(input)
         .map(|m| m.as_str())
         .collect();
-    for instruction in instructions {
-        match instruction {
-            "do()" => enabled = true,
-            "don't()" => enabled = false,
+    instructions
+        .iter()
+        .fold(0, |acc, instruction| match *instruction {
+            "do()" => {
+                enabled = true;
+                acc
+            }
+            "don't()" => {
+                enabled = false;
+                acc
+            }
             _ => {
                 if enabled {
                     let parsed_instruction = instruction.trim_start_matches("mul(");
                     let parsed_instruction = parsed_instruction.trim_end_matches(')');
-                    let numbers = parsed_instruction.split(',').collect::<Vec<&str>>();
-                    total +=
-                        numbers[0].parse::<u32>().unwrap() * numbers[1].parse::<u32>().unwrap();
+                    let numbers = parsed_instruction
+                        .split(',')
+                        .map(|val| val.parse::<u32>().unwrap())
+                        .collect::<Vec<u32>>();
+                    acc + numbers[0] * numbers[1]
+                } else {
+                    acc
                 }
             }
-        }
-    }
-    total
+        })
 }
 #[cfg(test)]
 mod tests {
