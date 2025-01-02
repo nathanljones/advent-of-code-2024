@@ -18,18 +18,21 @@ impl Direction {
     }
 }
 
+#[must_use]
 pub fn parse(input: &str) -> HashMap<UVec2, u32> {
-    let mut ret: HashMap<UVec2, u32> = HashMap::new();
-    for line in input.lines().enumerate() {
-        for char in line.1.chars().enumerate() {
-            if char.1.is_ascii_digit() {
-                ret.insert(
-                    UVec2::new(char.0.try_into().unwrap(), line.0.try_into().unwrap()),
-                    char.1.to_digit(10).unwrap(),
-                );
-            }
-        }
-    }
-
-    ret
+    input
+        .lines()
+        .enumerate()
+        .flat_map(|(y, line)| {
+            line.chars()
+                .enumerate()
+                .filter(|(_x, character)| character.is_ascii_digit())
+                .map(move |(x, char)| {
+                    (
+                        UVec2::new(x.try_into().unwrap(), y.try_into().unwrap()),
+                        char.to_digit(10).unwrap(),
+                    )
+                })
+        })
+        .collect::<HashMap<UVec2, u32>>()
 }

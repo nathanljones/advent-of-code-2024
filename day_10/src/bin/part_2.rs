@@ -10,17 +10,18 @@ fn count_trailheads(map: &HashMap<UVec2, u32>) -> u32 {
         map.clone().into_iter().filter(|pos| pos.1 == 9).collect();
     start_positions.iter().fold(0, |acc, start_pos| {
         acc + end_positions.iter().fold(0, |acc, pos| {
-            acc + count_paths(
+            acc + u32::try_from(count_paths(
                 start_pos.0,
                 |&p| get_next_nodes(p, map).into_iter(),
                 |&p| p == pos.0,
-            ) as u32
+            ))
+            .unwrap()
         })
     })
 }
 
 fn get_next_nodes(point: UVec2, map: &HashMap<UVec2, u32>) -> Vec<UVec2> {
-    let directions = vec![
+    let directions = [
         Direction::Up,
         Direction::Down,
         Direction::Left,
@@ -35,10 +36,8 @@ fn get_next_nodes(point: UVec2, map: &HashMap<UVec2, u32>) -> Vec<UVec2> {
             if map.contains_key(&new_point.as_uvec2()) {
                 let new_height = *map.get(&new_point.as_uvec2()).unwrap();
                 let old_height = *map.get(&point).unwrap();
-                if old_height < 9 {
-                    if new_height == old_height + 1 {
-                        ret.push(new_point.as_uvec2());
-                    }
+                if old_height < 9 && new_height == old_height + 1 {
+                    ret.push(new_point.as_uvec2());
                 }
             }
             ret.into_iter()
@@ -48,31 +47,11 @@ fn get_next_nodes(point: UVec2, map: &HashMap<UVec2, u32>) -> Vec<UVec2> {
 fn main() {
     let inputs = include_str!("input.txt");
     let total = count_trailheads(&parse(inputs));
-    println!("{:?}", total);
+    println!("{total}");
 }
+#[cfg(test)]
 mod tests {
     use super::*;
-    const EXAMPLE_ONE: &str = "...0...
-...1...
-...2...
-6543456
-7.....7
-8.....8
-9.....9";
-    const EXAMPLE_TWO: &str = "..90..9
-...1.98
-...2..7
-6543456
-765.987
-876....
-987....";
-    const EXAMPLE_THREE: &str = "10..9..
-2...8..
-3...7..
-4567654
-...8..3
-...9..2
-.....01";
     const EXAMPLE_FOUR: &str = "89010123
 78121874
 87430965

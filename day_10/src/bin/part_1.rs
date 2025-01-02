@@ -37,7 +37,7 @@ fn count_trailheads(map: &HashMap<UVec2, u32>) -> u32 {
 }
 
 fn get_next_nodes(point: UVec2, map: &HashMap<UVec2, u32>) -> Vec<Successor> {
-    let directions = vec![
+    let directions = [
         Direction::Up,
         Direction::Down,
         Direction::Left,
@@ -65,8 +65,9 @@ fn get_next_nodes(point: UVec2, map: &HashMap<UVec2, u32>) -> Vec<Successor> {
 fn main() {
     let inputs = include_str!("input.txt");
     let total = count_trailheads(&parse(inputs));
-    println!("{:?}", total);
+    println!("{total}");
 }
+#[cfg(test)]
 mod tests {
     use super::*;
     const EXAMPLE_ONE: &str = "...0...
