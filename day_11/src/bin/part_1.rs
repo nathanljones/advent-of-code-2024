@@ -48,11 +48,10 @@ fn convert_stone(stone: &str) -> HashMap<String, u64> {
     result
 }
 fn parse_input(input: &str) -> HashMap<String, u64> {
-    let mut stones: HashMap<String, u64> = HashMap::new();
-    for digit in input.split_whitespace().map(std::borrow::ToOwned::to_owned) {
-        stones.insert(digit, 1);
-    }
-    stones
+    input
+        .split_whitespace()
+        .map(|x| (x.to_string(), 1))
+        .collect::<HashMap<String, u64>>()
 }
 #[cfg(test)]
 mod tests {
