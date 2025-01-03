@@ -1,12 +1,9 @@
-#[derive(Clone, Copy)]
-struct PageOrderingRules {
-    page_number_before: u32,
-    page_number: u32,
-}
+use day_05::{are_pages_in_correct_order, parse_input};
+
 fn main() {
     let inputs = include_str!("input.txt");
     let total = add_up_middle_pages(inputs);
-    println!("{:?}", total);
+    println!("{total}");
 }
 
 fn add_up_middle_pages(input: &str) -> u32 {
@@ -17,62 +14,15 @@ fn add_up_middle_pages(input: &str) -> u32 {
         .map(|pages| find_middle_page_no(pages))
         .sum()
 }
-fn parse_input(input: &str) -> (Vec<PageOrderingRules>, Vec<Vec<u32>>) {
-    let mut page_ordering_rules: Vec<PageOrderingRules> = vec![];
-    let mut pages: Vec<Vec<u32>> = vec![];
-
-    for line in input.lines() {
-        if line.contains('|') {
-            let ordering_rule = line.split('|').collect::<Vec<&str>>();
-            let mut page_order: PageOrderingRules = PageOrderingRules {
-                page_number_before: 0,
-                page_number: 0,
-            };
-            page_order.page_number_before = ordering_rule[0].parse::<u32>().unwrap();
-            page_order.page_number = ordering_rule[1].parse::<u32>().unwrap();
-            page_ordering_rules.push(page_order);
-        } else if line.contains(',') {
-            let page_nos: Vec<u32> = line
-                .split(',')
-                .map(|no| no.parse::<u32>().unwrap())
-                .collect();
-            pages.push(page_nos);
-        } else {
-            continue;
-        }
-    }
-
-    (page_ordering_rules, pages)
-}
 fn find_middle_page_no(pages: &[u32]) -> u32 {
     let middle_page_no = pages.len() / 2;
     pages[middle_page_no]
 }
 
-fn are_pages_in_correct_order(pages: &[u32], page_ordering_rules: &[PageOrderingRules]) -> bool {
-    for (position, page) in pages.iter().enumerate() {
-        let page_order = filter_page_rules(*page, page_ordering_rules);
-        for pos in 0..position {
-            let page_to_check = pages[pos];
-            if page_order.contains(&page_to_check) {
-                return false;
-            }
-        }
-    }
-
-    true
-}
-
-fn filter_page_rules(page_no: u32, page_ordering_rules: &[PageOrderingRules]) -> Vec<u32> {
-    page_ordering_rules
-        .iter()
-        .filter(|page_ordering_rule| page_ordering_rule.page_number_before == page_no)
-        .map(|page_ordering_rule: &PageOrderingRules| page_ordering_rule.page_number)
-        .collect()
-}
 #[cfg(test)]
 mod tests {
     use super::*;
+    use day_05::filter_page_rules;
 
     const TEST_INPUT: &str = "47|53
 97|13
