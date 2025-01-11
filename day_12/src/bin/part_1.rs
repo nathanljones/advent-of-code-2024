@@ -4,7 +4,7 @@ use std::collections::{HashMap, HashSet, VecDeque};
 fn main() {
     let inputs = include_str!("input.txt");
     let total = calc_price(inputs);
-    println!("{:?}", total);
+    println!("{total}");
 }
 
 enum Direction {
@@ -80,7 +80,7 @@ fn get_regions(grid: &HashMap<UVec2, char>, grid_size: (u32, u32)) -> Vec<HashMa
 }
 
 fn get_region_area(region: &HashMap<UVec2, char>) -> u32 {
-    region.len() as u32
+    u32::try_from(region.len()).unwrap()
 }
 fn get_region_perimeter(region: &HashMap<UVec2, char>) -> u32 {
     let directions = build_directions();
@@ -92,10 +92,10 @@ fn get_region_perimeter(region: &HashMap<UVec2, char>) -> u32 {
                 acc + 1
             } else {
                 let new_grid_pos = new_grid_pos.as_uvec2();
-                if !region.contains_key(&new_grid_pos) {
-                    acc + 1
-                } else {
+                if region.contains_key(&new_grid_pos) {
                     acc
+                } else {
+                    acc + 1
                 }
             }
         })
@@ -115,9 +115,12 @@ fn parse_input(input: &str) -> HashMap<UVec2, char> {
         .lines()
         .enumerate()
         .flat_map(|(y, line)| {
-            line.chars()
-                .enumerate()
-                .map(move |(x, c)| (UVec2::new(x as u32, y as u32), c))
+            line.chars().enumerate().map(move |(x, c)| {
+                (
+                    UVec2::new(u32::try_from(x).unwrap(), u32::try_from(y).unwrap()),
+                    c,
+                )
+            })
         })
         .collect::<HashMap<UVec2, char>>()
 }
@@ -125,7 +128,7 @@ fn parse_input(input: &str) -> HashMap<UVec2, char> {
 fn get_grid_size(input: &str) -> (u32, u32) {
     let rows = input.lines().count();
     let cols = input.lines().next().unwrap().len();
-    (cols as u32, rows as u32)
+    (u32::try_from(cols).unwrap(), rows as u32)
 }
 
 #[cfg(test)]
