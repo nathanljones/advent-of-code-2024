@@ -128,7 +128,7 @@ fn parse_input(input: &str) -> HashMap<UVec2, char> {
 fn get_grid_size(input: &str) -> (u32, u32) {
     let rows = input.lines().count();
     let cols = input.lines().next().unwrap().len();
-    (u32::try_from(cols).unwrap(), rows as u32)
+    (u32::try_from(cols).unwrap(), u32::try_from(rows).unwrap())
 }
 
 #[cfg(test)]
